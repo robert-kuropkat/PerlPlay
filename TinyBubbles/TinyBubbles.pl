@@ -3,36 +3,15 @@
 use strict;
 use warnings;
 use diagnostics;
-$| = 1;
+use English;
 
-use Benchmark; 
+local $OUTPUT_AUTOFLUSH = 1;
 
-my $file;
-open $file, '<', 'C:\Dev\HelloPerl\ShuffledWordList.txt';
-chomp(my @unsorted = <$file>);
-close $file;
+my $DEBUG = 1;
 
-print "\n\nStarting...\n\n";
-
-print "\nBubbleSort Me...\n";
-# my @sortMe = ("wilma", "fred", "barney", "bam-bam", "pebbles", "dino");
-my @sortMe = @unsorted;
-timethis ( 1000, bubblesort_me(\@sortMe));
-# print join("\n", @sortMe),"\n";
-
-print "\nBubbleSort Jon...\n";
-# @sortMe = ("wilma", "fred", "barney", "bam-bam", "pebbles", "dino");
-@sortMe = @unsorted;
-timethis ( 1000, bubblesort_jon(\@sortMe));
-# print join("\n", @sortMe),"\n";
-
-print "\nBubbleSort Don...\n";
-# @sortMe = ("wilma", "fred", "barney", "bam-bam", "pebbles", "dino");
-@sortMe = @unsorted;
-timethis ( 1000, bubblesort_don(\@sortMe));
-# print join("\n", @sortMe),"\n";
-
-print "\n\nDone...\n\n";
+bubblesort_me(["wilma", "fred", "barney", "bam-bam", "pebbles", "dino"]);
+bubblesort_jon(["wilma", "fred", "barney", "bam-bam", "pebbles", "dino"]);
+bubblesort_don(["wilma", "fred", "barney", "bam-bam", "pebbles", "dino"]);
 
 sub bubblesort_me{
     my $r = shift;
@@ -40,16 +19,15 @@ sub bubblesort_me{
     my $j;
     my $wordCount = $#$r;
 
-    print "Pass ";
-    for ($BOUND = $#$r; $BOUND; $BOUND--) {
-        printf( "%02.4f%%", ($BOUND/$wordCount)*100 );
+    DeBug($r, "presort", "bubblesort_me") if $DEBUG;
+    for ($BOUND = $wordCount; $BOUND; $BOUND--) {
         for ($j=1; $j<=$BOUND; $j++){
             if ($r->[$j-1] gt $r->[$j]) {
                 @$r[$j, $j-1] = @$r[$j-1, $j];
             }
         }
-        print "\b\b\b\b\b\b\b\b";
     }
+    DeBug($r, "postsort", "bubblesort_me") if $DEBUG;
 }
 
 sub bubblesort_jon{
@@ -59,9 +37,8 @@ sub bubblesort_jon{
     my $ncomp = 0;
     my $nswap = 0;
 
-    print "Pass #";
+    DeBug($array, "presort", "bubblesort_jon") if $DEBUG;
     for ($i = $#$array; $i; $i--) {
-        printf( "%06d", $i);
         for ($j=1; $j<=$i; $j++){
             $ncomp++;
             if ($array->[$j-1] gt $array->[$j]) {
@@ -69,9 +46,16 @@ sub bubblesort_jon{
                 $nswap++;
             }
         }
-        print "\b\b\b\b\b\b";
     }
+    DeBug($array, "postsort", "bubblesort_jon") if $DEBUG;
+
 }
+
+#
+# Not finished.  This was a copy of mine and never
+# done correctly.  See Algorithm in book
+#
+# Looks like it is just one loop and a goto
 
 sub bubblesort_don{
     my $R = shift;
@@ -80,15 +64,29 @@ sub bubblesort_don{
     my $t= 0;
     my $N = $#$R;
 
-    print "Pass #";
+    DeBug($R, "presort", "bubblesort_don") if $DEBUG;
     for ($BOUND = $N; $BOUND; $BOUND--) {
-        printf( "%06d", $BOUND);
         for ($j=1; $j<=$BOUND; $j++){
             if ($R->[$j-1] gt $R->[$j]) {
                 @$R[$j, $j-1] = @$R[$j-1, $j];
                 $t++;
             }
         }
-        print "\b\b\b\b\b\b";
     }
+    DeBug($R, "postsort", "bubblesort_don") if $DEBUG;
+
+}
+
+sub DeBug {
+    my $array = shift;
+    my $sorting = shift;
+    my $calling_subroutine = shift;
+    my $tab = "";
+    $tab = "     " if ($sorting eq "postsort");
+    print $tab . " Called by: " . $calling_subroutine . "\n";
+    print $tab . "Word count: " . @$array . "\n";
+    print $tab . "Sort State: " . $sorting . "\n";
+    print $tab;
+    print join("\n$tab", @$array),"\n";
+    print "\n";
 }
