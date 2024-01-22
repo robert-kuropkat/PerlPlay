@@ -9,9 +9,9 @@ local $OUTPUT_AUTOFLUSH = 1;
 
 my $DEBUG = 1;
 
+bubblesort_don(["wilma", "fred", "barney", "bam-bam", "pebbles", "dino"]);
 bubblesort_me(["wilma", "fred", "barney", "bam-bam", "pebbles", "dino"]);
 bubblesort_jon(["wilma", "fred", "barney", "bam-bam", "pebbles", "dino"]);
-bubblesort_don(["wilma", "fred", "barney", "bam-bam", "pebbles", "dino"]);
 
 sub bubblesort_me{
     my $r = shift;
@@ -58,23 +58,36 @@ sub bubblesort_jon{
 # Looks like it is just one loop and a goto
 
 sub bubblesort_don{
-    my $R = shift;
-    my $BOUND;
-    my $j;
-    my $t= 0;
-    my $N = $#$R;
+    use Array::Base +1;
+    my $R = shift;      # reference to records array
+    my $K = $R;         # secondary reference to records array
+    my $BOUND;          # highest index for which the record is not known to be in its final position
+    my $j;              # lopp index
+    my $t;              # last swapped value array index
+    my $N = @$R;        # highest array index
+#    local $[ = 1;       # reset starting index to follow algoritm as stated.
 
     DeBug($R, "presort", "bubblesort_don") if $DEBUG;
-    for ($BOUND = $N; $BOUND; $BOUND--) {
-        for ($j=1; $j<=$BOUND; $j++){
-            if ($R->[$j-1] gt $R->[$j]) {
-                @$R[$j, $j-1] = @$R[$j-1, $j];
-                $t++;
+    B1:
+        $BOUND = $N;
+    B2:
+        $t = 0;
+        for ($j=1; $j<=$BOUND-1; $j++){
+            B3:
+            if ($K->[$j] gt $K->[$j+1]) {
+                @$R[$j, $j+1] = @$R[$j+1, $j];
+                $t = $j;
             }
         }
+    B4:
+    if ($t) {
+        $BOUND = $t;
+        goto B2;
     }
+
     DeBug($R, "postsort", "bubblesort_don") if $DEBUG;
 
+    no Array::Base;
 }
 
 sub DeBug {
