@@ -9,41 +9,36 @@ local $OUTPUT_AUTOFLUSH = 1;
 
 my $DEBUG = 1;
 
-bubblesort_don(["wilma", "fred", "barney", "bam-bam", "pebbles", "dino"]);
-bubblesort_me(["wilma", "fred", "barney", "bam-bam", "pebbles", "dino"]);
-bubblesort_jon(["wilma", "fred", "barney", "bam-bam", "pebbles", "dino"]);
+bubblesort_me(["wilma", "pebbles", "fred", "dino", "barney", "bam-bam"]);
+bubblesort_jon(["wilma", "pebbles", "fred", "dino", "barney", "bam-bam"]);
+bubblesort_don(["wilma", "pebbles", "fred", "dino", "barney", "bam-bam"]);
 
 sub bubblesort_me{
-    my $r = shift;
-    my $BOUND;
-    my $j;
-    my $wordCount = $#$r;
+    my $words = shift;
+    my $wordCount = @$words;
+    my $lastIndex = $#$words;
 
-    DeBug($r, "presort", "bubblesort_me") if $DEBUG;
-    for ($BOUND = $wordCount; $BOUND; $BOUND--) {
-        for ($j=1; $j<=$BOUND; $j++){
-            if ($r->[$j-1] gt $r->[$j]) {
-                @$r[$j, $j-1] = @$r[$j-1, $j];
+    DeBug($words, "presort", "bubblesort_me") if $DEBUG;
+    for (my $i = 1; $i <= $wordCount -1; $i++) {
+        for (my $j=0; $j <= $lastIndex - 1; $j++){
+            if ($words->[$j] gt $words->[$j+1]) {
+                @$words[$j, $j+1] = @$words[$j+1, $j];
             }
         }
     }
-    DeBug($r, "postsort", "bubblesort_me") if $DEBUG;
+    DeBug($words, "postsort", "bubblesort_me") if $DEBUG;
 }
 
 sub bubblesort_jon{
     my $array = shift;
     my $i;
     my $j;
-    my $ncomp = 0;
-    my $nswap = 0;
 
     DeBug($array, "presort", "bubblesort_jon") if $DEBUG;
     for ($i = $#$array; $i; $i--) {
         for ($j=1; $j<=$i; $j++){
-            $ncomp++;
             if ($array->[$j-1] gt $array->[$j]) {
                 @$array[$j, $j-1] = @$array[$j-1, $j];
-                $nswap++;
             }
         }
     }
@@ -51,42 +46,34 @@ sub bubblesort_jon{
 
 }
 
-#
-# Not finished.  This was a copy of mine and never
-# done correctly.  See Algorithm in book
-#
-# Looks like it is just one loop and a goto
-
 sub bubblesort_don{
-    use Array::Base +1;
+    use Array::Base +1; # Start array index at 1 to match Algorithm description
     my $R = shift;      # reference to records array
     my $K = $R;         # secondary reference to records array
     my $BOUND;          # highest index for which the record is not known to be in its final position
     my $j;              # lopp index
     my $t;              # last swapped value array index
-    my $N = @$R;        # highest array index
-#    local $[ = 1;       # reset starting index to follow algoritm as stated.
+    my $N = $#$R;       # highest array index (aka, number of array elements)
 
     DeBug($R, "presort", "bubblesort_don") if $DEBUG;
-    B1:
+    B1: # [Initialize BOUND.]
         $BOUND = $N;
-    B2:
+    B2: # [Loop on j.]
         $t = 0;
         for ($j=1; $j<=$BOUND-1; $j++){
-            B3:
+    B3: # [Compare/exchange Rj:Rj+1.]
             if ($K->[$j] gt $K->[$j+1]) {
                 @$R[$j, $j+1] = @$R[$j+1, $j];
                 $t = $j;
             }
         }
-    B4:
+    B4: # [Any exchanges?]
     if ($t) {
         $BOUND = $t;
         goto B2;
     }
 
     DeBug($R, "postsort", "bubblesort_don") if $DEBUG;
-
     no Array::Base;
 }
 

@@ -17,28 +17,35 @@ chomp(my @unsorted = <$file>);
 my $u = \@unsorted;
 close $file;
 
-my $bubbleMe = sub {
+my $results = timethese ( $sortCylces
+          , { '1_bubbleMe'   => 'bubblesort_me(\@unsorted)'
+            , '2_bubbleJon'  => 'bubblesort_jon(\@unsorted)'
+            , '3_bubbleDon'  => 'bubblesort_don(\@unsorted)'
+            }
+          );
+Benchmark::cmpthese($results);
+
+sub bubblesort_me{
     my $unsortedWords = shift;
     my @words = @$unsortedWords;
 
     my $words = \@words;
-    my $wordCount = @$words;
-    my $lastIndex = $#$words;
+    my $wordCount = $#$words;
 
     DeBug($words, "presort", "bubblesort_me") if $DEBUG;
-    for (my $i = 1; $i <= $wordCount - 1; $i++) {
+    for (my $i = 0; $i <= $wordCount; $i++) {
         printf( "%08.4f%%", ($i/$wordCount)*100 ) if $DEBUG;
-        for (my $j=0; $j <= $lastIndex - 1; $j++){
-            if ($words->[$j] gt $words->[$j+1]) {
-                @$words[$j, $j+1] = @$words[$j+1, $j];
+        for (my $j=1; $j<=$wordCount; $j++){
+            if ($words->[$j-1] gt $words->[$j]) {
+                @$words[$j, $j-1] = @$words[$j-1, $j];
             }
         }
         printf ("\b\b\b\b\b\b\b\b\b") if $DEBUG;
     }
     DeBug($words, "postsort", "bubblesort_me") if $DEBUG;
-   };
+}
 
-my  $bubbleJon = sub {
+sub bubblesort_jon{
     my $u = shift;
     my @array = @$u;
 
@@ -46,7 +53,7 @@ my  $bubbleJon = sub {
     my $i;
     my $j;
 
-    DeBug($array, "presort", "bubblesort_jon") if $DEBUG;
+    DeBug($array, "presort") if $DEBUG;
     for ($i = $#$array; $i; $i--) {
         printf( "%08.4f%%", ($i/$#$array)*100 ) if $DEBUG;
         for ($j=1; $j<=$i; $j++){
@@ -56,11 +63,11 @@ my  $bubbleJon = sub {
         }
         printf ("\b\b\b\b\b\b\b\b\b") if $DEBUG;
     }
-    DeBug($array, "postsort", "bubblesort_jon") if $DEBUG;
+    DeBug($array, "postsort") if $DEBUG;
 
-   };
+}
 
-my $bubbleDon = sub {
+sub bubblesort_don{
     use Array::Base +1; # Start array index at 1 to match Algorithm description
     my $u = shift;
     my @R = @$u;
@@ -95,7 +102,7 @@ my $bubbleDon = sub {
     DeBug($R, "postsort", "bubblesort_don") if $DEBUG;
 
     no Array::Base;
-   };
+}
 
 sub DeBug {
     my $array = shift;
@@ -110,11 +117,3 @@ sub DeBug {
     print $tab . " Last word: " . $array->[-1] . "\n";
     print "\n";
 }
-
-my $results = timethese ( $sortCylces
-          , { '1_bubbleMe'   => sub { $bubbleMe->($u) }
-            , '2_bubbleJon'  => sub { $bubbleJon->($u) }
-            , '3_bubbleDon'  => sub { $bubbleDon->($u) }
-            }
-          );
-Benchmark::cmpthese($results);
