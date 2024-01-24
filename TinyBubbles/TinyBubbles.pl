@@ -48,8 +48,8 @@ sub bubblesort_jon{
 
 sub bubblesort_don{
     use Array::Base +1; # Start array index at 1 to match Algorithm description
-    my $R = shift;      # reference to records array
-    my $K = $R;         # secondary reference to records array
+    my $R = shift;      # reference to array of records (words)
+    my $K = $R;         # secondary reference to records array.  used as the "key" for each record (word)
     my $BOUND;          # highest index for which the record is not known to be in its final position
     my $j;              # lopp index
     my $t;              # last swapped value array index
@@ -72,7 +72,6 @@ sub bubblesort_don{
         $BOUND = $t;
         goto B2;
     }
-
     DeBug($R, "postsort", "bubblesort_don") if $DEBUG;
     no Array::Base;
 }
