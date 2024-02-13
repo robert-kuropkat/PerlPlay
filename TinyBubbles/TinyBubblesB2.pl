@@ -19,9 +19,10 @@ close $file;
 
 my $bubbleMe = sub {
     my $unsortedWords = shift;
-    my @words = @$unsortedWords;
 
+    my @words = @$unsortedWords;
     my $words = \@words;
+
     my $wordCount = @$words;
     my $lastIndex = $#$words;
 
@@ -40,9 +41,10 @@ my $bubbleMe = sub {
 
 my  $bubbleJon = sub {
     my $u = shift;
-    my @array = @$u;
 
+    my @array = @$u;
     my $array = \@array;
+
     my $i;
     my $j;
 
@@ -63,9 +65,10 @@ my  $bubbleJon = sub {
 my $bubbleDon = sub {
     use Array::Base +1; # Start array index at 1 to match Algorithm description
     my $u = shift;
-    my @R = @$u;
 
+    my @R = @$u;
     my $R = \@R;
+
     my $K = $R;         # secondary reference to records array
     my $BOUND;          # highest index for which the record is not known to be in its final position
     my $j;              # lopp index
@@ -101,7 +104,9 @@ sub DeBug {
     my $array = shift;
     my $sorting = shift;
     my $calling_subroutine = shift;
+
     my $tab = "";
+
     $tab = "     " if ($sorting eq "postsort");
     print $tab . " Called by: " . $calling_subroutine . "\n";
     print $tab . "Word count: " . @$array . "\n";

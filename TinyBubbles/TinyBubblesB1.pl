@@ -8,8 +8,8 @@ use English;
 
 local $OUTPUT_AUTOFLUSH = 1;
 
-my $DEBUG = 0;
-my $sortCylces = 10;
+my $DEBUG = 1;
+my $sortCylces = 2;
 
 my $file;
 open $file, '<', 'D:\Dev\PerlPlay\TinyBubbles\ShuffledWordList.txt';
@@ -19,17 +19,18 @@ close $file;
 
 my $results = timethese ( $sortCylces
           , { '1_bubbleMe'   => sub { bubblesort_me($u) }
-            , '2_bubbleJon'  => sub { bubblesort_jon($u) }
-            , '3_bubbleDon'  => sub { bubblesort_don($u) }
+#            , '2_bubbleJon'  => sub { bubblesort_jon($u) }
+#            , '3_bubbleDon'  => sub { bubblesort_don($u) }
             }
           );
 Benchmark::cmpthese($results);
 
 sub bubblesort_me{
-    my $unsortedWords = shift;
-    my @words = @$unsortedWords;
+    my $words = shift;
+#    my $unsortedWords = shift;
+#    my @words = @$unsortedWords;
 
-    my $words = \@words;
+#    my $words = \@words;
     my $wordCount = @$words;
     my $lastIndex = $#$words;
 
@@ -48,9 +49,10 @@ sub bubblesort_me{
 
 sub bubblesort_jon{
     my $u = shift;
-    my @array = @$u;
 
+    my @array = @$u;
     my $array = \@array;
+
     my $i;
     my $j;
 
@@ -71,9 +73,10 @@ sub bubblesort_jon{
 sub bubblesort_don{
     use Array::Base +1; # Start array index at 1 to match Algorithm description
     my $u = shift;
-    my @R = @$u;
 
+    my @R = @$u;
     my $R = \@R;
+
     my $K = $R;         # secondary reference to records array
     my $BOUND;          # highest index for which the record is not known to be in its final position
     my $j;              # lopp index
@@ -109,7 +112,9 @@ sub DeBug {
     my $array = shift;
     my $sorting = shift;
     my $calling_subroutine = shift;
+
     my $tab = "";
+
     $tab = "     " if ($sorting eq "postsort");
     print $tab . " Called by: " . $calling_subroutine . "\n";
     print $tab . "Word count: " . @$array . "\n";

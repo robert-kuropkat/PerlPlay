@@ -43,7 +43,6 @@ sub bubblesort_jon{
         }
     }
     DeBug($array, "postsort", "bubblesort_jon") if $DEBUG;
-
 }
 
 sub bubblesort_don{
